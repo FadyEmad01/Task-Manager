@@ -15,75 +15,10 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import {
-  RiSlowDownLine,
-  RiLeafLine,
-  RiNavigationLine,
-  RiSpeakLine,
-  RiCodeSSlashLine,
-  RiGeminiLine,
-  RiLinksLine,
-  RiDatabase2Line,
-} from "@remixicon/react";
 import { NavUser } from "./nav-user";
+import { NAVIGATION_DATA } from "@/constants/sidebar";
+import { usePathname } from "next/navigation";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "Fady Emad",
-    email: "mark@bannert.com",
-    avatar:
-      "https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/exp3/user_itiiaq.png",
-  },
-  navMain: [
-    {
-      title: "General",
-      items: [
-        {
-          title: "Dashboard",
-          url: "#",
-          icon: RiSlowDownLine,
-          isActive: true,
-        },
-        {
-          title: "Transactions",
-          url: "#",
-          icon: RiLeafLine,
-        },
-        {
-          title: "Metrics",
-          url: "#",
-          icon: RiNavigationLine,
-        },
-        {
-          title: "Security",
-          url: "#",
-          icon: RiSpeakLine,
-        },
-        {
-          title: "API",
-          url: "#",
-          icon: RiCodeSSlashLine,
-        },
-        {
-          title: "Quick Setup",
-          url: "#",
-          icon: RiGeminiLine,
-        },
-        {
-          title: "Payment Links",
-          url: "#",
-          icon: RiLinksLine,
-        },
-        {
-          title: "Archive",
-          url: "#",
-          icon: RiDatabase2Line,
-        },
-      ],
-    },
-  ],
-};
 
 function SidebarLogo() {
   const id = React.useId();
@@ -124,47 +59,54 @@ function SidebarLogo() {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname(); // current route path
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader className="h-16 max-md:mt-2 mb-2 justify-center">
         <SidebarLogo />
       </SidebarHeader>
       <SidebarContent className="-mt-2">
-        {data.navMain.map((item) => (
+        {NAVIGATION_DATA.navMain.map((item) => (
           <SidebarGroup key={item.title}>
             <SidebarGroupLabel className="uppercase text-muted-foreground/65">
               {item.title}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      className="group/menu-button group-data-[collapsible=icon]:px-[5px]! font-medium gap-3 h-9 [&>svg]:size-auto"
-                      tooltip={item.title}
-                      isActive={item.isActive}
-                    >
-                      <a href={item.url}>
-                        {item.icon && (
-                          <item.icon
-                            className="text-muted-foreground/65 group-data-[active=true]/menu-button:text-primary"
-                            size={22}
-                            aria-hidden="true"
-                          />
-                        )}
-                        <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {item.items.map((item) => {
+
+                  const isActive = pathname === item.url;
+
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        className="group/menu-button group-data-[collapsible=icon]:px-[5px]! font-medium gap-3 h-9 [&>svg]:size-auto"
+                        tooltip={item.title}
+                        isActive={isActive}
+                      >
+                        <Link href={item.url}>
+                          {item.icon && (
+                            <item.icon
+                              className="text-muted-foreground/65 group-data-[active=true]/menu-button:text-primary"
+                              size={22}
+                              aria-hidden="true"
+                            />
+                          )}
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )
+                })}
+
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={NAVIGATION_DATA.user} />
       </SidebarFooter>
     </Sidebar>
   );
