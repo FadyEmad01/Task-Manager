@@ -105,7 +105,7 @@ function ActionButton({ icon, label, onClick }: ActionButtonProps) {
 
 function MessageActions({ onReply }: { onReply?: () => void }) {
   return (
-    <div className="relative inline-flex bg-white rounded-full border border-black/[0.08] shadow-sm -space-x-px">
+    <div className="relative inline-flex bg-muted rounded-full border border-muted/[0.08] shadow-sm -space-x-px">
       <TooltipProvider delayDuration={0}>
         {/* <ActionButton icon={<RiCodeSSlashLine size={16} />} label="Show code" />
         <ActionButton icon={<RiBookLine size={16} />} label="Bookmark" />

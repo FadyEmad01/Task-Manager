@@ -52,11 +52,15 @@ const fakeMessages = [
 ];
 
 export default function Chat() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   // Simulate current user as Alice
   const currentUserId = "1";
   const [replyTo, setReplyTo] = useState<null | { id: string; user: chatUser; content: React.ReactNode }>(null);
-
   const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -72,6 +76,8 @@ export default function Chat() {
     messagesEndRef.current?.scrollIntoView();
   }, [replyTo]);
 
+  if (!hydrated) return null;
+
   return (
     <ScrollArea className="flex-1 h-full w-full bg-background">
       <div className="h-full flex flex-col px-4 md:px-6 lg:px-8">
@@ -79,7 +85,7 @@ export default function Chat() {
         <div className="relative grow">
           <div className=" mx-auto mt-6 space-y-6">
             <div className="text-center my-8">
-              <div className="inline-flex items-center bg-white rounded-full border border-black/[0.08] shadow-xs text-xs font-medium py-1 px-3 text-foreground/80">
+              <div className="inline-flex items-center bg-muted rounded-full border border-muted/[0.08] shadow-xs text-xs font-medium py-1 px-3 text-foreground/80">
                 <RiShining2Line
                   className="me-1.5 text-muted-foreground/70 -ms-1"
                   size={14}
@@ -133,6 +139,7 @@ export default function Chat() {
                 style={{ maxHeight: 504, minHeight: 40, overflowY: "auto" }}
                 placeholder={replyTo ? `Replying to ${replyTo.user.name}...` : "Type a message..."}
                 aria-label="Type a message..."
+                spellCheck={false}
               />
               {/* send button */}
               <div className="flex w-full items-center justify-end p-3">

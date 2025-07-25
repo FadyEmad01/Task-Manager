@@ -75,7 +75,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <SidebarMenu>
                 {item.items.map((item) => {
 
-                  const isActive = pathname === item.url;
+                  // const isActive = pathname === item.url;
+                  
+                  let isActive = false;
+
+                  // Special handling for the 'Chat' item
+                  if (item.url === "/chat") {
+                    isActive = pathname === "/chat" || pathname.startsWith("/chat/");
+                  } else {
+                    // Default behavior for other items: exact match
+                    isActive = pathname === item.url;
+                  }
 
                   return (
                     <SidebarMenuItem key={item.title}>

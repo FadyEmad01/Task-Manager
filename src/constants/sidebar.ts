@@ -3,11 +3,7 @@ import {
   Gauge,
   HandCoins,
   MessageCircleMore,
-  ShieldCheck,
-  Code,
-  Rocket,
-  Link,
-  Archive,
+  Settings
 } from "lucide-react";
 
 export const NAVIGATION_DATA: NavigationData = {
@@ -35,6 +31,11 @@ export const NAVIGATION_DATA: NavigationData = {
           title: "Chat",
           url: "/chat",
           icon: MessageCircleMore,
+        },
+        {
+          title: "Settings",
+          url: "/settings",
+          icon: Settings,
         },
       ],
     },

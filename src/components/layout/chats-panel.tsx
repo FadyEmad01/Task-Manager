@@ -8,100 +8,12 @@ import * as React from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { usePathname, useRouter } from 'next/navigation'; // Import usePathname from next/navigation
+import { ChatConversation } from "@/types/ChatConversation";
+import { DUMMY_CHAT_CONVERSATIONS } from "@/constants/DUMMY_CHAT_CONVERSATIONS";
 
-// --- Chat Data Types ---
-export type User = {
-  id: string;
-  name: string;
-  avatarUrl?: string;
-};
 
-export type Group = {
-  id: string;
-  name: string;
-  avatarUrl?: string; // Optional: for group avatars, or default to icon
-};
-
-export type ChatParticipant = User | Group;
-
-export type LastMessage = {
-  text: string;
-  timestamp: string; // ISO 8601 string
-};
-
-export type ChatConversation = {
-  id: string;
-  type: "individual" | "group";
-  participants: ChatParticipant[];
-  name?: string; // Optional for groups, or derived for individuals
-  lastMessage: LastMessage;
-  unreadCount: number;
-};
-
-// --- Dummy Chat Data ---
-const DUMMY_CHAT_CONVERSATIONS: ChatConversation[] = [
-  {
-    id: "chat-1",
-    type: "individual",
-    participants: [
-      { id: "user-1", name: "Alice Wonderland", avatarUrl: "https://i.pravatar.cc/40?img=1" },
-    ],
-    lastMessage: { text: "Hey, how are you doing today?", timestamp: "2025-07-24T16:55:00Z" },
-    unreadCount: 2,
-  },
-  {
-    id: "chat-2",
-    type: "group",
-    name: "Team Project X",
-    participants: [
-      { id: "user-2", name: "Bob The Builder" },
-      { id: "user-3", name: "Charlie Chaplin" },
-    ],
-    lastMessage: { text: "Let's finalize the presentation slides.", timestamp: "2025-07-24T15:30:00Z" },
-    unreadCount: 0,
-  },
-  {
-    id: "chat-3",
-    type: "individual",
-    participants: [
-      { id: "user-4", name: "David Copperfield", avatarUrl: "https://i.pravatar.cc/40?img=2" },
-    ],
-    lastMessage: { text: "Can you send me the latest report by tomorrow?", timestamp: "2025-07-23T18:00:00Z" },
-    unreadCount: 1,
-  },
-  {
-    id: "chat-4",
-    type: "group",
-    name: "Dev Team Standup",
-    participants: [
-      { id: "user-5", name: "Eve Harrington" },
-      { id: "user-6", name: "Frank Sinatra" },
-      { id: "user-7", name: "Grace Kelly" },
-    ],
-    lastMessage: { text: "Don't forget the daily standup at 9 AM.", timestamp: "2025-07-22T09:15:00Z" },
-    unreadCount: 5,
-  },
-  {
-    id: "chat-5",
-    type: "individual",
-    participants: [
-      { id: "user-8", name: "Harry Potter", avatarUrl: "https://i.pravatar.cc/40?img=3" },
-    ],
-    lastMessage: { text: "Thanks for your help with the bug!", timestamp: "2025-07-21T11:00:00Z" },
-    unreadCount: 0,
-  },
-  {
-    id: "chat-6",
-    type: "group",
-    name: "Marketing Brainstorm",
-    participants: [
-      { id: "user-9", name: "Ivy League" },
-      { id: "user-10", name: "Jack Sparrow" },
-    ],
-    lastMessage: { text: "New campaign ideas are in the shared document.", timestamp: "2025-07-20T14:00:00Z" },
-    unreadCount: 3,
-  },
-];
 
 // --- Chat Panel Context ---
 type ChatPanelContextType = {
@@ -157,7 +69,9 @@ ChatPanelProvider.displayName = "ChatPanelProvider";
 
 // --- Chat Panel Content ---
 const ChatPanelContent = () => {
-  // In a real application, you'd fetch this data (e.g., via React Query, SWR, or a global store)
+  const { isMobile, setOpenMobile } = useChatPanel();
+  const pathname = usePathname(); // Get the current pathname
+
   const chatConversations: ChatConversation[] = DUMMY_CHAT_CONVERSATIONS;
 
   const formatDate = (isoString: string) => {
@@ -197,66 +111,74 @@ const ChatPanelContent = () => {
       </div>
 
       {/* Chat list - wrapped in ScrollArea for desktop, or implicitly handled by Sheet for mobile */}
-      <div className="-mt-px flex flex-col flex-grow"> {/* Use flex-grow to fill available space */}
-        <div className="py-5 relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-black/[0.06] before:via-black/10 before:to-black/[0.06]">
-          <h3 className="text-xs font-medium uppercase text-muted-foreground/80 mb-4">
-            Conversations
-          </h3>
-          <div className="space-y-2">
-            {chatConversations.length > 0 ? (
-              chatConversations.map((chat) => (
-                <Button
+      <div className="py-5 relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-black/[0.06] before:via-black/10 before:to-black/[0.06]">
+        <h3 className="text-xs font-medium uppercase text-muted-foreground/80 mb-4">
+          Conversations
+        </h3>
+        <div className="flex flex-col gap-y-2">
+          {chatConversations.length > 0 ? (
+            chatConversations.map((chat) => {
+              const chatHref = `/chat/${chat.id}`;
+              const isActive = pathname === chatHref; // Determine if the current chat is active
+
+              return (
+                <Link
                   key={chat.id}
-                  variant="ghost"
-                  className="w-full justify-start h-auto p-2"
-                  // TODO: Add an onClick handler here to select the chat
-                  // onClick={() => handleChatSelection(chat.id)}
+                  href={chatHref}
+                  passHref
                 >
-                  <div className="flex items-center gap-3 w-full">
-                    {/* Avatar for individual chats, or a group icon for groups */}
-                    <Avatar className="h-9 w-9">
-                      {chat.type === "individual" && chat.participants[0].avatarUrl ? (
-                        <AvatarImage src={chat.participants[0].avatarUrl} alt={chat.participants[0].name} />
-                      ) : (
-                        <AvatarFallback>
-                          {chat.type === "individual"
-                            ? chat.participants[0].name.charAt(0).toUpperCase()
-                            : <RiGroupLine size={18} />} {/* Use RiGroupLine for group fallback */}
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
-                    <div className="flex-1 overflow-hidden">
-                      <div className="flex justify-between items-center">
-                        <p className="font-medium text-sm truncate">
-                          {chat.type === "individual"
-                            ? chat.participants[0].name
-                            : chat.name}
-                        </p>
-                        <span className="text-xs text-muted-foreground ml-2 flex-shrink-0">
-                          {formatDate(chat.lastMessage.timestamp)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center mt-05">
-                        <p className="text-xs text-muted-foreground truncate">
-                          {chat.lastMessage.text}
-                        </p>
-                        {chat.unreadCount > 0 && (
-                          // <Badge className="ml-2 flex-shrink-0 rounded-full h-4 min-w-4 p-0.5 flex items-center justify-center text-xs font-medium ">
-                          <Badge className="flex items-center justify-center flex-shrink-0 min-w-4 h-4 px-1 rounded-full tabular-nums font-mono ms-2">
-                            {chat.unreadCount}
-                          </Badge>
+                  <Button
+                    asChild
+                    // Conditionally apply variant based on isActive
+                    variant={isActive ? "secondary" : "ghost"}
+                    className="w-full justify-start h-auto p-2"
+                    onClick={() => isMobile && setOpenMobile(false)}
+                  >
+                    <div className="flex items-center gap-3 w-full">
+                      {/* Avatar for individual chats, or a group icon for groups */}
+                      <Avatar className="h-9 w-9">
+                        {chat.type === "individual" && chat.participants[0].avatarUrl ? (
+                          <AvatarImage src={chat.participants[0].avatarUrl} alt={chat.participants[0].name} />
+                        ) : (
+                          <AvatarFallback>
+                            {chat.type === "individual"
+                              ? chat.participants[0].name.charAt(0).toUpperCase()
+                              : <RiGroupLine size={18} />}
+                          </AvatarFallback>
                         )}
+                      </Avatar>
+                      <div className="flex-1 overflow-hidden">
+                        <div className="flex justify-between items-center">
+                          <p className="font-medium text-sm truncate">
+                            {chat.type === "individual"
+                              ? chat.participants[0].name
+                              : chat.name}
+                          </p>
+                          <span className="text-xs text-muted-foreground ml-2 flex-shrink-0">
+                            {formatDate(chat.lastMessage.timestamp)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mt-05">
+                          <p className="text-xs text-muted-foreground truncate">
+                            {chat.lastMessage.text}
+                          </p>
+                          {chat.unreadCount > 0 && (
+                            <Badge className="flex items-center justify-center flex-shrink-0 min-w-4 h-4 px-1 rounded-full tabular-nums font-mono ms-2">
+                              {chat.unreadCount}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Button>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No conversations yet.
-              </p>
-            )}
-          </div>
+                  </Button>
+                </Link>
+              );
+            })
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No conversations yet.
+            </p>
+          )}
         </div>
       </div>
     </>
@@ -271,9 +193,8 @@ const ChatPanel = () => {
   if (isMobile) {
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile}>
-        <SheetContent className="w-72 px-4 md:px-6 py-0 bg-background flex flex-col [&>button]:hidden"> {/* Changed background, added flex-col */}
+        <SheetContent className="w-72 px-4 md:px-6 py-0 bg-background flex flex-col [&>button]:hidden">
           <SheetTitle className="hidden">Chat</SheetTitle>
-          {/* SheetContent itself will handle the scroll behavior on mobile */}
           <ChatPanelContent />
         </SheetContent>
       </Sheet>
@@ -281,8 +202,8 @@ const ChatPanel = () => {
   }
 
   return (
-    <ScrollArea className="h-full"> {/* Ensure ScrollArea has a height */}
-      <div className="w-[300px] px-4 md:px-6 flex flex-col h-full"> {/* Added flex-col h-full */}
+    <ScrollArea className="h-full">
+      <div className="w-[300px] px-4 md:px-6 flex flex-col h-full">
         <ChatPanelContent />
       </div>
     </ScrollArea>
@@ -296,30 +217,41 @@ const ChatPanelTrigger = ({
 }: {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { isMobile, togglePanel } = useChatPanel();
 
-  if (!isMobile) {
-    return null; // Only show trigger on mobile
-  }
+  if (!isMobile) return null;
+
+  const isChatPage = pathname.startsWith("/chat");
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event);
+
+    if (!isChatPage) {
+      router.push("/chat");
+    }
+
+    togglePanel();
+  };
 
   return (
     <Button
       variant="ghost"
       className="px-2"
-      onClick={(event) => {
-        onClick?.(event);
-        togglePanel();
-      }}
+      onClick={handleClick}
     >
-      <RiChat3Line // Changed from Users to RiChat3Line for chat icon
+      <RiChat3Line
         className="text-muted-foreground sm:text-muted-foreground/70 size-5"
         size={20}
         aria-hidden="true"
       />
-      <span className="max-sm:sr-only">Chats</span> {/* Changed text */}
+      <span className="max-sm:sr-only">Chats</span>
     </Button>
   );
 };
+
+
 ChatPanelTrigger.displayName = "ChatPanelTrigger";
 
 export {
