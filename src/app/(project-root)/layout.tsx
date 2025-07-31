@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import BreadcrumbNav from "@/components/layout/BreadcrumbNav";
 import { ChatPanelProvider, ChatPanelTrigger } from "@/components/layout/chats-panel";
 import Notifications from "@/components/layout/Notifications";
-import { ThemeProvider } from "@/components/layout/theme-provider";
+import { ThemeProvider } from "@/components/themes/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
@@ -41,7 +41,7 @@ export default async function AppLayout({
               <div className="px-4 md:px-6 lg:px-8 @container ">
                 {/* <div className="w-full max-w-7xl mx-auto"> */}
                 <div className="w-full  mx-auto relative">
-                  <header className="bg-background sticky top-0 w-full flex flex-wrap gap-3 min-h-10 py-4 shrink-0 items-center transition-all ease-linear border-b">
+                  <header className="bg-background sticky z-50 top-0 w-full flex flex-wrap gap-3 min-h-10 py-4 shrink-0 items-center transition-all ease-linear border-b">
                     {/* Left side */}
                     <div className="flex flex-1 items-center gap-2">
                       <SidebarTrigger className="-ms-1" />
@@ -60,7 +60,7 @@ export default async function AppLayout({
                     </div>
                   </header>
                   {/* pt-8 */}
-                  <div className="overflow-hidden w-full h-full relative">
+                  <div className="overflow-y-hidden w-full h-full relative">
                     {children}
                   </div>
                 </div>

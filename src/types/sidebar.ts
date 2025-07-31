@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import { RemixiconComponentType } from "@remixicon/react";
 
 export type User = {
   name: string;
@@ -9,7 +10,7 @@ export type User = {
 export type NavigationItem = {
   title: string;
   url: string;
-  icon: LucideIcon;
+  icon: LucideIcon | RemixiconComponentType;
   isActive?: boolean;
 };
 

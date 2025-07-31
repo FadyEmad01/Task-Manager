@@ -5,6 +5,7 @@ import {
   MessageCircleMore,
   Settings
 } from "lucide-react";
+import { RiCalendarEventLine } from "@remixicon/react"
 
 export const NAVIGATION_DATA: NavigationData = {
   user: {
@@ -31,6 +32,11 @@ export const NAVIGATION_DATA: NavigationData = {
           title: "Chat",
           url: "/chat",
           icon: MessageCircleMore,
+        },
+        {
+          title: "Calendar",
+          url: "/calendar",
+          icon: RiCalendarEventLine,
         },
         {
           title: "Settings",

@@ -47,7 +47,7 @@ export function ChatMessage({ user, children, isOwn, onReply, id, replyTo }: Cha
           <div
             className={cn(
               "px-4 py-3 rounded-xl min-w-[60px] max-w-[350px] break-words",
-              isOwn ? "bg-primary text-white" : "bg-muted "
+              isOwn ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
             )}
             style={!isOwn ? { borderColor: user.color } : {}}
           >
